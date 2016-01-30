@@ -17,8 +17,8 @@ def parse_url(url: str):
 
 
 def parse_researcher(resource, soup):
+    logging.info('parsing ' + resource.url)
     name = soup.select('.profile-header-name .fn,.ga-profile-header-name')[0].string
-    print([resource.make_url(link['href']) for link in soup.select('.js-publication-title-link')])
     return [], {'id': resource.uid, 'name': name}
 
 
