@@ -23,6 +23,24 @@ def reset_whole_index():
         pass
     es.indices.create(
             index=ELASTIC_INDEX_NAME,
+            # body={
+            #     'settings': {
+            #         # just one shard, no replicas
+            #         'number_of_shards': 1,
+            #         'number_of_replicas': 0,
+            #
+            #         # custom analyzer for analyzing file paths
+            #         'analysis': {
+            #             'analyzer': {
+            #                 'file_path': {
+            #                     'type': 'custom',
+            #                     'tokenizer': 'path_hierarchy',
+            #                     'filter': ['lowercase']
+            #                 }
+            #             }
+            #         }
+            #     }
+            # }
     )
 
 

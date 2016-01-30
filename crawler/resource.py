@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 from settings import CACHE_DIR
 
 
@@ -20,3 +22,6 @@ class Resource:
 
     def __eq__(self, other):
         return (self.type, self.uid) == (other.type, other.uid)
+
+    def make_url(self, relative_url):
+        return urljoin(self.url, relative_url)

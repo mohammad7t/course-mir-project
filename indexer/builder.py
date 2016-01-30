@@ -8,15 +8,15 @@ def rebuild():
     es.reset_whole_index()
     for file in (CACHE_DIR / 'publication').walkfiles('*.json'):
         publication = json.loads(file.text())
+        print(file)
         es.index_publication(
                 id=publication['id'],
-                title=publication['name'],
-                abstract=publication['abstraction'],
-                authors=[],
-                cited_ids=publication['citedInIDs'],
-                reference_ids=publication['refrenceIDs'],
+                title=publication['title'],
+                abstract=publication['abstract'],
+                authors=publication['authors'],
+                cited_ids=publication['citations'],
+                reference_ids=publication['references'],
         )
     es.refresh()
-
 
 rebuild()

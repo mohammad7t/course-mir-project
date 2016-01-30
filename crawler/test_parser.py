@@ -1,4 +1,6 @@
 from crawler import parser
+from crawler.factory import resource_from_url
+
 
 def test_parse_url():
     result = parser.parse_url(
