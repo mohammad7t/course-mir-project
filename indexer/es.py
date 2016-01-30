@@ -1,5 +1,6 @@
 from os import walk
 from pprint import pprint
+import copy
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
@@ -94,3 +95,10 @@ def get_publications_freq_maps():
         doc_tf_map[doc_id] = tf_map
 
     return doc_tf_map, df_map
+
+
+def update_ranks(pubs, ranks):
+    for pub, rank in zip(pubs, ranks):
+        new_pub = copy.copy(pub)
+        new_pub['rank'] = rank
+        es.update(index=ELASTIC_INDEX_NAME, doc_type='publication', id=pub['id'], body=new_pub)
