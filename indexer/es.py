@@ -41,13 +41,17 @@ def _get_all_publications():
     return ret
 
 
-def _add_term_vector_to_map_vector(map_vector, term_vector):
+def _add_term_vector_to_tf_map(tf_map, term_vector):
     for term, props in term_vector.items():
-        map_vector[term] = map_vector.get(term, 0) + props['term_freq']
+        tf_map[term] = tf_map.get(term, 0) + props['term_freq']
 
 
-def _get_publication_map_vector(id):
-    map_vector = {}
+def _add_term_vector_to_df_map(df_map, term_vector):
+    for term, props in term_vector.items():
+        df_map[term] = df_map.get(term, 0) + props['doc_freq']
+
+
+def _add_publication_map_vector(id, tf_map, df_map):
     result = es.termvectors(
             index=ELASTIC_INDEX_NAME,
             doc_type='publication',
@@ -55,13 +59,21 @@ def _get_publication_map_vector(id):
             fields='title,abstract',
             positions=False, offsets=False, term_statistics=True,
     )['term_vectors']
-    _add_term_vector_to_map_vector(map_vector, result['abstract']['terms'])
-    _add_term_vector_to_map_vector(map_vector, result['title']['terms'])
-    return map_vector
+    _add_term_vector_to_df_map(df_map, result['abstract']['terms'])
+    _add_term_vector_to_df_map(df_map, result['title']['terms'])
+    _add_term_vector_to_tf_map(tf_map, result['abstract']['terms'])
+    _add_term_vector_to_tf_map(tf_map, result['title']['terms'])
+    return tf_map
 
 
-def get_publications_tf_map():
+def get_publications_freq_maps():
     pubs = _get_all_publications()
-    return {pub['id']: _get_publication_map_vector(pub['id']) for pub in pubs}
+    doc_tf_map = {}
+    df_map = {}
+    for pub in pubs:
+        doc_id = pub['id']
+        tf_map = {}
+        _add_publication_map_vector(doc_id, df_map, tf_map)
+        doc_tf_map[doc_id] = tf_map
 
-print(get_publications_tf_map())
+    return doc_tf_map, df_map

@@ -1,6 +1,8 @@
 import numpy as np
 import math
 
+from indexer.es import get_publications_freq_maps
+
 
 def cummulate(dics):
     ans = dict({})
@@ -30,20 +32,20 @@ def dic_dot(v1, v2):
             ans += value*v2[key]
     return ans
 
-def get_clustered(dtf, tf, k):
+def get_clustered(dtf, df, k):
     """
     :param dtf: {doc : {term : freq}}
-    :param tf:  {term : freq}
+    :param df:  {term : freq}
     :param k:   number of clusters
     :return:    {clusterId : {doc}}
     """
 
-    point = map({})             #   {doc:{dim:value}}
+    point = dict()             #   {doc:{dim:value}}
     for doc, termFreq in dtf.items():
-        v = map({})
+        v = dict({})
         norm = 0
         for term, freq in termFreq.items():
-            v[term] = (1+math.log10(freq))*(math.log10(2000/tf[term]))
+            v[term] = (1+math.log10(freq))*(math.log10(2000 / df[term]))
         point[doc] = normalized(v)
 
 
@@ -69,3 +71,6 @@ def get_clustered(dtf, tf, k):
             center[i] = normalized(cummulate(cluster[i]))
 
     return cluster
+
+doc_tf_map, df_map = get_publications_freq_maps()
+print(get_clustered(doc_tf_map, df_map, 5))
