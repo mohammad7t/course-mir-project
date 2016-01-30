@@ -4,19 +4,20 @@ import math
 from indexer.es import get_publications_freq_maps
 
 
-def cummulate(dics):
-    ans = dict({})
+def cummulate(dics, point):
+    ans = dict()
     for tf in dics:
-        for key, value in tf.items():
+        for key, value in point[tf].items():
             if ans.__contains__(key):
                 ans[key] += value
             else:
                 ans[key] = value
     return ans
 
+
 def normalized(vector):
     norm = 0
-    ans = dict({})
+    ans = dict()
     for key, value in vector.items():
         norm += value*value
     norm = math.sqrt(norm)
@@ -32,6 +33,7 @@ def dic_dot(v1, v2):
             ans += value*v2[key]
     return ans
 
+
 def get_clustered(dtf, df, k):
     """
     :param dtf: {doc : {term : freq}}
@@ -40,35 +42,32 @@ def get_clustered(dtf, df, k):
     :return:    {clusterId : {doc}}
     """
 
-    point = dict()             #   {doc:{dim:value}}
+    point = dict()             # {doc:{dim:value}}
     for doc, termFreq in dtf.items():
-        v = dict({})
-        norm = 0
+        v = dict()
         for term, freq in termFreq.items():
             v[term] = (1+math.log10(freq))*(math.log10(2000 / df[term]))
         point[doc] = normalized(v)
 
-
     centers_keys = np.random.permutation(list(dtf.keys()))[0:k]
-    center = dict({})           #   {int:{term:freq}}
+    center = dict()           # {int:{term:freq}}
     for doc in centers_keys:
         center[len(center)] = point[doc]
 
-    cluster = dict({})
     for counter in range(10):
 
-        cluster = dict({})      #   {int:{doc}}
+        cluster = dict()      # {int:{doc}}
         for i in range(k):
-            cluster[i] = set({})
+            cluster[i] = set()
 
         for doc, vec in point.items():
             dist = []
             for i in range(k):
                 dist.append(dic_dot(vec, center[i]))
-            cluster[np.argmin(dist)].add(doc)
+            cluster[np.argmax(dist)].add(doc)
 
         for i in range(k):
-            center[i] = normalized(cummulate(cluster[i]))
+            center[i] = normalized(cummulate(cluster[i], point))
 
     return cluster
 
