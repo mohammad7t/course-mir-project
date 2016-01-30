@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="refresh" content="5">
     <title>Title</title>
+    <style>
+        td{
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
 <a href="/progress"> Jobs</a>
@@ -11,5 +16,29 @@
     <input name="q" value="{{ q }}">
     <input type="submit" value="search">
 </form>
+<p>Results</p>
+<table>
+    <thead>
+    <tr>
+        <td>title</td>
+        <td>authors</td>
+        <td>abstract</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for result in results %}
+        <tr>
+            <td>{{ result.title }}</td>
+            <td>
+                {% for author in result.authors %}
+                    {{ author.name }},
+                {% endfor %}
+            </td>
+            <td>{{ result.abstract }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
 </body>
 </html>

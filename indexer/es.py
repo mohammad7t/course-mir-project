@@ -83,6 +83,10 @@ def _add_publication_map_vector(id, tf_map, df_map):
     _add_term_vector_to_tf_map(tf_map, result['title']['terms'])
     return tf_map
 
+def search(query):
+    result= es.search(index=ELASTIC_INDEX_NAME, doc_type='publication', q=query)
+    return [hit['_source'] for hit in result['hits']['hits']]
+
 
 def get_publications_freq_maps():
     pubs = _get_all_publications()

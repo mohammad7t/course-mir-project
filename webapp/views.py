@@ -4,7 +4,7 @@ import subprocess
 
 import signal
 from django.shortcuts import render, redirect
-
+from indexer import es
 from settings import CACHE_DIR, PROJECT_ROOT
 
 tasks = ['crawler', 'indexer']
@@ -12,7 +12,8 @@ tasks = ['crawler', 'indexer']
 
 def main(request):
     q = request.GET.get('q', '')
-    return render(request, 'root.html', {'q': q}, )
+    results = es.search(q)
+    return render(request, 'root.html', {'q': q, 'results': results})
 
 
 def check_pid(pid):
