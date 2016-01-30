@@ -64,3 +64,4 @@ def get_publications_tf_map():
     pubs = _get_all_publications()
     return {pub['id']: _get_publication_map_vector(pub['id']) for pub in pubs}
 
+print(get_publications_tf_map())
