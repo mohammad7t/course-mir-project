@@ -105,4 +105,4 @@ def update_ranks(pubs, ranks):
     for pub, rank in zip(pubs, ranks):
         new_pub = copy.copy(pub)
         new_pub['rank'] = rank
-        es.update(index=ELASTIC_INDEX_NAME, doc_type='publication', id=pub['id'], body=new_pub)
+        es.update(index=ELASTIC_INDEX_NAME, doc_type='publication', id=pub['id'], body=dict(doc=new_pub))

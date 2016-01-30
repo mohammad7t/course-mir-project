@@ -33,7 +33,7 @@ def _get_rank(cites):
         p[i,:] /= np.sum(p[i,:])
 
     a = np.ones((n,n))
-    for i in range(10):
+    for i in range(50):
         p = np.dot(p,p)
     a = np.dot(a,p)
 
@@ -44,3 +44,5 @@ if __name__ == '__main__':
     ranks = get_rank(pubs)
     es.update_ranks(pubs, ranks)
     es.refresh()
+
+print(es._get_all_publications()[20]['rank'])
