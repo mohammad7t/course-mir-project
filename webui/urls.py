@@ -20,5 +20,7 @@ import webapp.views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', webapp.views.main),
-    url(r'^progress$', webapp.views.progress),
+    url(r'^progress/$', webapp.views.progress),
+    url(r'^start/$', webapp.views.start),
+    url(r'^kill/$', webapp.views.kill),
 ]

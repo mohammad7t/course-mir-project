@@ -5,8 +5,35 @@
     <title>Title</title>
 </head>
 <body>
-<code>
-    {{progress | pprint}}
-</code>
+<table>
+    <thead>
+    <tr>
+        <td>Job</td>
+        <td>PID</td>
+        <td>actions</td>
+        <td>Progress</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for task in tasks %}
+        <tr>
+            <td>{{ task.name }}</td>
+            <td>{{ task.pid }}</td>
+            <td>
+                {% if task.pid %}
+                    <a href="/kill/?task={{ task.name }}">kill</a> &nbsp;
+                {% else %}
+                    <a href="/start/?task={{ task.name }}">start</a> &nbsp;
+                {% endif %}
+            </td>
+            <td>
+                <code>
+                    {{ task.progress }}
+                </code>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 </body>
 </html>

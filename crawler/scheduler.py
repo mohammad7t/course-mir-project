@@ -48,7 +48,7 @@ class Scheduler:
             'publications': [pubs, CRAWLER_LIMIT_PUBLICATIONS],
             'researchers': [auths, CRAWLER_LIMIT_RESEARCHERS],
         }
-        (CACHE_DIR / 'progress').write_text(json.dumps(status))
+        (CACHE_DIR / 'crawler.progress').write_text(json.dumps(status))
         return pubs >= CRAWLER_LIMIT_PUBLICATIONS and auths >= CRAWLER_LIMIT_RESEARCHERS
 
     def start(self):
@@ -60,4 +60,5 @@ class Scheduler:
                 self.visit(link)
 
 
-Scheduler().start()
+if __name__ == '__main__':
+    Scheduler().start()

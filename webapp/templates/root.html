@@ -6,7 +6,10 @@
     <title>Title</title>
 </head>
 <body>
-<p>hello</p>
-<a href="/progress?file=cache/progress"> Crawler progress</a>
+<a href="/progress"> Jobs</a>
+<form method="get" action=".">
+    <input name="q" value="{{ q }}">
+    <input type="submit" value="search">
+</form>
 </body>
 </html>

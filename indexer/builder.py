@@ -6,7 +6,8 @@ from settings import CACHE_DIR
 
 def rebuild():
     es.reset_whole_index()
-    for file in (CACHE_DIR / 'publication').walkfiles('*.json'):
+    files = list((CACHE_DIR / 'publication').walkfiles('*.json'))
+    for file in files:
         publication = json.loads(file.text())
         if not publication:
             continue
@@ -20,4 +21,6 @@ def rebuild():
         )
     es.refresh()
 
-rebuild()
+
+if __name__ == '__main__':
+    rebuild()

@@ -58,7 +58,6 @@ def _get_all_publications():
     es.clear_scroll(scroll_id=scroll_id)
     return ret
 
-
 def _add_term_vector_to_tf_map(tf_map, term_vector):
     for term, props in term_vector.items():
         tf_map[term] = tf_map.get(term, 0) + props['term_freq']
