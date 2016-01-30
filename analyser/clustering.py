@@ -82,6 +82,11 @@ def get_clustered(dtf, df, k):
         for i in range(k):
             center[i] = normalized(cummulate(cluster[i], point))
 
+    measure = 0.0
+    for kl in range(k):
+        for doc in cluster[kl]:
+            measure += math.acos(dic_dot(point[doc], center[kl]))
+
     label = [0 for i in range(k)]
 
     (CACHE_DIR/'clustering.progress').write_text('60%')
@@ -115,7 +120,7 @@ def get_clustered(dtf, df, k):
 
     (CACHE_DIR/'clustering.progress').write_text('100%')
 
-    return cluster, label, stp
+    return cluster, label, stp, measure
 
 if __name__ == '__main__':
     doc_tf_map, df_map = get_publications_freq_maps()
@@ -125,8 +130,12 @@ if __name__ == '__main__':
         if stp == True:
             break
             """
-    k = 7
-    cluster, label, stp = get_clustered(doc_tf_map, df_map, k)
+    meas = []
+    for k in range(4,8):
+        cluster, label, stp, measure = get_clustered(doc_tf_map, df_map, k)
+        meas.append(measure)
+
+    print(meas)
     print(k)
     for i in range(k):
         print(len(cluster[i]))
