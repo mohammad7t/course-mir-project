@@ -38,7 +38,7 @@ def download_and_get_links(resource):
     if resource.links_path.exists():
         return resource.links_path.lines()
 
-    if (datetime.datetime.now() - last_time).total_seconds() < 1: #politeness
+    if (datetime.datetime.now() - last_time).total_seconds() < 1:  # politeness
         time.sleep(1)
     last_time = datetime.datetime.now()
 
@@ -56,6 +56,7 @@ def download_and_get_links(resource):
         links, data = parse_researcher(resource, soup)
     else:
         links, data = parse_publication(resource, soup)
-    resource.cache_path.write_text(json.dumps(data))
-    resource.links_path.write_lines(links)
+    if len(list(data.items())) > 0:
+        resource.cache_path.write_text(json.dumps(data))
+        resource.links_path.write_lines(links)
     return links

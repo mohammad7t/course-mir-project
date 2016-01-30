@@ -8,7 +8,8 @@ def rebuild():
     es.reset_whole_index()
     for file in (CACHE_DIR / 'publication').walkfiles('*.json'):
         publication = json.loads(file.text())
-        print(file)
+        if not publication:
+            continue
         es.index_publication(
                 id=publication['id'],
                 title=publication['title'],
