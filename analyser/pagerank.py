@@ -1,6 +1,24 @@
 import numpy as np
+from indexer import es
 
-def get_rank(cites):
+def get_rank(publications):
+    n = len(publications)
+    cites = np.zeros((n,n))
+    ind2id = []
+    id2ind = dict()
+    for pub in publications:
+        id2ind[pub['id']] = len(ind2id)
+        ind2id.append(pub['id'])
+
+    for pub in publications:
+        for ref_id in pub['reference_ids']:
+            if ref_id in id2ind:
+                cites[id2ind[pub['id']], id2ind[ref_id]] = 1
+
+    return _get_rank(cites).tolist()[0]
+
+
+def _get_rank(cites):
     """
     :param cites: np.array presenting citation of i -> j
     :return: array of page ranks
@@ -15,8 +33,14 @@ def get_rank(cites):
         p[i,:] /= np.sum(p[i,:])
 
     a = np.ones((n,n))
-    for i in range(15):
+    for i in range(10):
         p = np.dot(p,p)
     a = np.dot(a,p)
 
     return a
+
+if __name__ == '__main__':
+    pubs = es._get_all_publications()
+    ranks = get_rank(pubs)
+    es.update_ranks(pubs, ranks)
+    es.refresh()
