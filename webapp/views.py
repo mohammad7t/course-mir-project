@@ -9,7 +9,7 @@ import logging
 from indexer import es
 from settings import CACHE_DIR, PROJECT_ROOT
 
-tasks = ['crawler', 'indexer']
+tasks = ['crawler', 'indexer', 'clustering', 'pagerank', 'writers']
 
 
 def main(request):
