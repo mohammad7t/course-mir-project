@@ -20,4 +20,5 @@ import webapp.views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', webapp.views.main),
+    url(r'^progress$', webapp.views.progress),
 ]
