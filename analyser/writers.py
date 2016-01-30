@@ -1,5 +1,7 @@
 import numpy as np
 
+from settings import CACHE_DIR
+from indexer import es
 
 def similarity(s1, s2, mat):
     s = list(s1.union(s2))
@@ -11,7 +13,7 @@ def similarity(s1, s2, mat):
     return sim
 
 
-def cluster_writers(w2d, n_merges):
+def cluster_writers(w2d):
     ind2id = []
     id2ind = dict()
     for key in w2d.keys():
@@ -27,6 +29,7 @@ def cluster_writers(w2d, n_merges):
 
     n = len(ind2id)
     adj = np.zeros((n, n), dtype=np.float64)
+    n_merges = int(len(w2d) * 2 / 300) * 10
     for doc, writers in d2w.items():
         w = list(writers)
         for i in range(len(w)):
@@ -44,6 +47,7 @@ def cluster_writers(w2d, n_merges):
         clusters.append(set({i}))
 
     for counter in range(n_merges):
+        (CACHE_DIR/'writers.progress').write_text('{} / {}'.format(counter+1, n_merges))
         m = n-counter
         best_i = set()
         best_j = set()
@@ -70,5 +74,12 @@ def cluster_writers(w2d, n_merges):
         ans.append(s)
     return ans
 
-# To test:
-print(cluster_writers({'a':{1,2,3}, 'b':{2,3}, 'c':{4,5}, 'd':{5,6}}, 2))
+if __name__ == '__main__':
+    pubs = es._get_all_publications()
+    authors = {}
+    for pub in pubs:
+        for author in pub['authors']:
+            uid = str(author['uid'])
+            authors.setdefault(uid, set())
+            authors[uid].add(pub['id'])
+    print(cluster_writers(authors))

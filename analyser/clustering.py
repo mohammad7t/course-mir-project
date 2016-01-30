@@ -2,12 +2,13 @@ import numpy as np
 import math
 
 from indexer.es import get_publications_freq_maps
+from settings import CACHE_DIR
 
 
 def IJ(term):
     for x in '.0123456789*-/':
         if term.__contains__(x):
-            return True;
+            return True
     return False
 
 
@@ -64,6 +65,8 @@ def get_clustered(dtf, df, k):
     for doc in centers_keys:
         center[len(center)] = point[doc]
 
+    (CACHE_DIR/'clustering.progress').write_text('20%')
+
     for counter in range(10):
 
         cluster = dict()      # {int:{doc}}
@@ -80,6 +83,9 @@ def get_clustered(dtf, df, k):
             center[i] = normalized(cummulate(cluster[i], point))
 
     label = [0 for i in range(k)]
+
+    (CACHE_DIR/'clustering.progress').write_text('60%')
+
     for i in range(k):
         score = dict()
         for term, N1_ in df.items():
@@ -106,6 +112,8 @@ def get_clustered(dtf, df, k):
         label[i] = []
         for t in score_list[:10]:
             label[i].append(t[0])
+
+    (CACHE_DIR/'clustering.progress').write_text('100%')
 
     return cluster, label, stp
 

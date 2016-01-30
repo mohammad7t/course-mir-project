@@ -1,5 +1,7 @@
 import numpy as np
 from indexer import es
+from settings import CACHE_DIR
+
 
 def get_rank(publications):
     n = len(publications)
@@ -35,6 +37,7 @@ def _get_rank(cites):
     a = np.ones((n,n))
     for i in range(50):
         p = np.dot(p,p)
+        (CACHE_DIR/'pagerank.progress').write_text('{}%'.format(i*2+2))
     a = np.dot(a,p)
 
     return a
