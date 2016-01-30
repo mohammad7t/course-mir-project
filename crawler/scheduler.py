@@ -1,30 +1,44 @@
 import queue
 
-from crawler import parser
+from crawler.downloader import download_and_get_links
+from crawler.factory import resource_from_url
+from collections import defaultdict
 
 from crawler.resource import Resource
-from settings import CACHE_DIR
-from collections import defaultdict
+from settings import CRAWLER_INITIAL_URLS
 
 
 class Scheduler:
     def __init__(self):
-        self.q_set = defaultdict(set)
+        self.seen = set()
         self.q = queue.Queue()
 
-    def schedule(self, url):
-        resource = Resource(url)
-        if resource.is_invalid or self.is_seen(resource):
+    def visit(self, url_or_resource):
+        if isinstance(url_or_resource, Resource):
+            resource = url_or_resource
+        else:
+            resource = resource_from_url(url_or_resource)
+        if resource is None or self.is_seen(resource):
             return
         self.enqueue(resource)
 
     def is_seen(self, resource):
-        return (resource.uid in self.q_set[resource.type]) or resource.cache_path.exists()
+        return resource in self.seen
 
-    def enqueue(self,resource):
-        self.q_set[resource.type].add(resource.uid)
+    def enqueue(self, resource):
+        self.seen.add(resource)
         self.q.put(resource)
 
     def dequeue(self):
-        resource = self.q.get()
-        self.q_set[resource.type].remove(resource.uid)
+        return self.q.get()
+
+    def start(self):
+        for url in CRAWLER_INITIAL_URLS:
+            self.enqueue(resource_from_url(url))
+        while (not self.q.empty()):
+            resource = self.dequeue()
+            for link in download_and_get_links(resource):
+                self.visit(link)
+
+
+Scheduler().start()
