@@ -1,8 +1,9 @@
 import queue
 
+import logging
+
 from crawler.downloader import download_and_get_links
 from crawler.factory import resource_from_url
-from collections import defaultdict
 
 from crawler.resource import Resource
 from settings import CRAWLER_INITIAL_URLS
@@ -18,6 +19,7 @@ class Scheduler:
             resource = url_or_resource
         else:
             resource = resource_from_url(url_or_resource)
+        logging.info('visiting {}'.format(resource.url))
         if resource is None or self.is_seen(resource):
             return
         self.enqueue(resource)
