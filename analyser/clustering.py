@@ -69,7 +69,32 @@ def get_clustered(dtf, df, k):
         for i in range(k):
             center[i] = normalized(cummulate(cluster[i], point))
 
-    return cluster
+    label = list(k)
+    for i in range(k):
+        score = dict()
+        for term, N1_ in df:
+            N = len(df)
+            N11 = 0
+            for doc in cluster[i].items():
+                if term in dtf[doc]:
+                    N11 += 1
+            N_1 = len(cluster[i])
+            N01 = N_1-N11
+            N0_ = len(df)-N1_
+            N10 = N1_-N11
+            N_0 = len(dtf)-len(cluster[i])
+            N00 = N_0-N10
+            score[term] = N11/N * math.log2(N*N11/(N1_*N_1))
+            score[term] += N01/N * math.log2(N*N01/(N0_*N_1))
+            score[term] += N10/N * math.log2(N*N10/(N1_*N_0))
+            score[term] += N00/N * math.log2(N*N00/(N0_*N_0))
+
+        score_list = sorted(list(score.items()), key= lambda x : (-x[1], x[0]))
+        label[i] = []
+        for t in score_list[:10]:
+            label[i].append(t[0])
+
+    return cluster, label
 
 doc_tf_map, df_map = get_publications_freq_maps()
 print(get_clustered(doc_tf_map, df_map, 5))

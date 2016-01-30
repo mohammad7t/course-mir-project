@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def similarity(s1, s2, mat):
     s = list(s1.union(s2))
     sim = 0.0
