@@ -39,11 +39,14 @@ def parse_publication(resource, soup):
         return [], {}
 
     authors = []
-    AUTHORS_URL = 'https://www.researchgate.net/publicliterature.PublicationAuthorList.html?publicationUid={}'
-    resp = ajax_get(AUTHORS_URL.format(resource.uid))
-    for author in resp['result']['state']['publicationAuthors']['loadedItems']:
-        links.append(urljoin('https://www.researchgate.net/', author['authorURL']))
-        authors.append({'uid': author['authorUid'], 'name': author['nameOnPublication']})
+    try:
+        AUTHORS_URL = 'https://www.researchgate.net/publicliterature.PublicationAuthorList.html?publicationUid={}'
+        resp = ajax_get(AUTHORS_URL.format(resource.uid))
+        for author in resp['result']['state']['publicationAuthors']['loadedItems']:
+            links.append(urljoin('https://www.researchgate.net/', author['authorURL']))
+            authors.append({'uid': author['authorUid'], 'name': author['nameOnPublication']})
+    except Exception:
+        pass
 
     citations = []
     try:
