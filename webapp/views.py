@@ -4,6 +4,8 @@ import subprocess
 
 import signal
 from django.shortcuts import render, redirect
+import logging
+
 from indexer import es
 from settings import CACHE_DIR, PROJECT_ROOT
 
@@ -12,7 +14,11 @@ tasks = ['crawler', 'indexer']
 
 def main(request):
     q = request.GET.get('q', '')
-    results = es.search(q)
+    try:
+        results = es.search(q)
+    except Exception:
+        logging.exception('bad query')
+        results = []
     return render(request, 'root.html', {'q': q, 'results': results})
 
 
