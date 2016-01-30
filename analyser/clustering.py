@@ -4,6 +4,13 @@ import math
 from indexer.es import get_publications_freq_maps
 
 
+def IJ(term):
+    for x in '.0123456789*-/':
+        if term.__contains__(x):
+            return True;
+    return False
+
+
 def cummulate(dics, point):
     ans = dict()
     for tf in dics:
@@ -41,6 +48,9 @@ def get_clustered(dtf, df, k):
     :param k:   number of clusters
     :return:    {clusterId : {doc}}
     """
+    stp = False
+    if k > 7:
+        stp = True
 
     point = dict()             # {doc:{dim:value}}
     for doc, termFreq in dtf.items():
@@ -69,32 +79,47 @@ def get_clustered(dtf, df, k):
         for i in range(k):
             center[i] = normalized(cummulate(cluster[i], point))
 
-    label = list(k)
+    label = [0 for i in range(k)]
     for i in range(k):
         score = dict()
-        for term, N1_ in df:
+        for term, N1_ in df.items():
             N = len(df)
             N11 = 0
-            for doc in cluster[i].items():
+            for doc in cluster[i]:
                 if term in dtf[doc]:
                     N11 += 1
             N_1 = len(cluster[i])
-            N01 = N_1-N11
+            N01 = max(0, N_1-N11)
             N0_ = len(df)-N1_
-            N10 = N1_-N11
+            N10 = max(0, N1_-N11)
             N_0 = len(dtf)-len(cluster[i])
-            N00 = N_0-N10
-            score[term] = N11/N * math.log2(N*N11/(N1_*N_1))
-            score[term] += N01/N * math.log2(N*N01/(N0_*N_1))
-            score[term] += N10/N * math.log2(N*N10/(N1_*N_0))
-            score[term] += N00/N * math.log2(N*N00/(N0_*N_0))
+            N00 = max(0, N_0-N10)
+            score[term] = 0
+            if IJ(term):
+                continue
+            score[term] += N11/N * math.log2(1+N*N11/(N1_*N_1))
+            score[term] += N01/N * math.log2(1+N*N01/(N0_*N_1))
+            #score[term] += N10/N * math.log2(1+N*N10/(N1_*N_0))
+            score[term] += N00/N * math.log2(1+N*N00/(N0_*N_0))
 
         score_list = sorted(list(score.items()), key= lambda x : (-x[1], x[0]))
         label[i] = []
         for t in score_list[:10]:
             label[i].append(t[0])
 
-    return cluster, label
+    return cluster, label, stp
 
-doc_tf_map, df_map = get_publications_freq_maps()
-print(get_clustered(doc_tf_map, df_map, 5))
+if __name__ == '__main__':
+    doc_tf_map, df_map = get_publications_freq_maps()
+
+    """ for k in range(10):
+        cluster, label, stp = get_clustered(doc_tf_map, df_map, k)
+        if stp == True:
+            break
+            """
+    k = 7
+    cluster, label, stp = get_clustered(doc_tf_map, df_map, k)
+    print(k)
+    for i in range(k):
+        print(len(cluster[i]))
+        print(label[i])
