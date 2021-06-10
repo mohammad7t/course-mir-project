@@ -1,5 +1,5 @@
 beautifulsoup4==4.4.1
-Django==1.11.23
+Django==2.2.24
 elasticsearch==2.2.0
 path.py==8.1.2
 requests==2.20.0
